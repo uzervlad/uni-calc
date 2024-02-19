@@ -38,7 +38,10 @@ fn main() -> Result<()> {
     }
 
     match input.as_str() {
-      "" => {},
+      "" => {
+        println!("Author: Гаврилович Владислав");
+        println!("For help, type \"funcs\", \"ops\", or \"consts\"");
+      },
       "funcs" => {
         println!("Available functions:");
         println!("* abs(x) - absolute value");

@@ -21,7 +21,7 @@ fn parse_primary(lexer: &mut Lexer, bracket: bool) -> Result<Node> {
       let value = parse_expression(lexer)?;
       match lexer.next() {
         Token::RightBracket => Ok(value),
-        _ => Err(Report::msg("Parenthesis")),
+        _ => Err(Report::msg("Parenthesis don't match")),
       }
     },
     _ => Err(Report::msg("Unexpected token"))

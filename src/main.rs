@@ -7,6 +7,17 @@ mod eval;
 mod lexer;
 mod parser;
 
+trait RoundWithPrecision {
+  fn round_with_precision(&self, precision: u32) -> Self;
+}
+
+impl RoundWithPrecision for f64 {
+  fn round_with_precision(&self, precision: u32) -> Self {
+    let m = 10_i32.pow(precision) as f64;
+    (self * m).round() / m
+  }
+}
+
 fn main() -> Result<()> {
   let mut input = String::new();
 
@@ -74,7 +85,7 @@ fn main() -> Result<()> {
         };
         let result = ast.evaluate();
       
-        println!("{}", result);
+        println!("{}", result.round_with_precision(5));
       }
     }
   }  

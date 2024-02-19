@@ -23,6 +23,7 @@ pub enum Func {
   Acos,
   Atan,
   Exp,
+  Root(f64),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -65,6 +66,13 @@ pub struct Lexer {
 }
 
 impl Lexer {
+  fn parse_func_argument(stream: &mut CharStream) -> Result<f64> {
+    match Self::parse_token(stream) {
+      Ok(Token::Literal(base)) => Ok(base),
+      _ => Err(Report::msg("Unable to parse function argument")),
+    }
+  }
+
   fn parse_token(stream: &mut CharStream) -> Result<Token> {
     const IDENTS: &'static str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     const DIGITS: &'static str = "1234567890.";
@@ -83,10 +91,7 @@ impl Lexer {
       return match buffer.to_ascii_lowercase().as_str() {
         "abs" => Ok(Token::Function(Func::Abs)),
         "sqrt" => Ok(Token::Function(Func::Sqrt)),
-        "log" => match Self::parse_token(stream) {
-          Ok(Token::Literal(base)) => Ok(Token::Function(Func::Log(base))),
-          _ => Err(Report::msg("Unable to parse logarithm base"))
-        },
+        "log" => Ok(Token::Function(Func::Log(Self::parse_func_argument(stream)?))),
         "sin" => Ok(Token::Function(Func::Sin)),
         "cos" => Ok(Token::Function(Func::Cos)),
         "tg" | "tan" => Ok(Token::Function(Func::Tg)),
@@ -95,6 +100,7 @@ impl Lexer {
         "acos" | "arccos" => Ok(Token::Function(Func::Acos)),
         "atan" | "arctan" => Ok(Token::Function(Func::Atan)),
         "exp" => Ok(Token::Function(Func::Exp)),
+        "root" => Ok(Token::Function(Func::Root(Self::parse_func_argument(stream)?))),
 
         "pi" => Ok(Token::Literal(PI)),
         "e" => Ok(Token::Literal(E)),

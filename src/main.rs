@@ -55,6 +55,7 @@ fn main() -> Result<()> {
         println!("* acos(x) / arccos(x) - arccosine");
         println!("* atan(x) / arctan(x) - arctangent");
         println!("* exp(x) - exponent (e^x)");
+        println!("* rootX(y) - root of y with base X");
       },
       "ops" => {
         println!("Available operators:");

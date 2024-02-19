@@ -26,6 +26,7 @@ impl Func {
       Func::Acos => arg.acos(),
       Func::Atan => arg.atan(),
       Func::Exp => arg.exp(),
+      Func::Root(base) => arg.powf(1. / base),
     }
   }
 }

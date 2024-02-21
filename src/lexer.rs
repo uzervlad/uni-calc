@@ -74,15 +74,12 @@ impl Lexer {
   }
 
   fn parse_token(stream: &mut CharStream) -> Result<Token> {
-    const IDENTS: &'static str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    const DIGITS: &'static str = "1234567890.";
-  
     let mut c = stream.peek();
   
-    if IDENTS.contains(c) {
+    if c.is_ascii_alphabetic() {
       let mut buffer = String::new();
   
-      while IDENTS.contains(c) {
+      while c.is_ascii_alphabetic() {
         buffer.push(c);
         stream.next();
         c = stream.peek();
@@ -110,10 +107,10 @@ impl Lexer {
       }
     }
   
-    if DIGITS.contains(c) {
+    if c.is_ascii_digit() {
       let mut buffer = String::new();
   
-      while DIGITS.contains(c) {
+      while c.is_ascii_digit() {
         buffer.push(c);
         stream.next();
         c = stream.peek();

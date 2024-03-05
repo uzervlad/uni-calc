@@ -191,6 +191,10 @@ mod tests {
     assert_eq!(lexer.next(), Token::End)
   }
 
+  fn test_fail(input: &str) {
+    assert!(tokenize(input).is_err())
+  }
+
   #[test]
   fn test_numbers() {
     let input = "1 .2 3. 4.5";
@@ -219,7 +223,7 @@ mod tests {
   }
 
   #[test]
-  fn text_functions() {
+  fn test_functions() {
     let input = "sqrt log2 abs sin cos";
     let tokens = vec![
       Token::Function(Func::Sqrt),
@@ -230,5 +234,12 @@ mod tests {
     ];
 
     test(input, tokens)
+  }
+
+  #[test]
+  fn test_invalid_input() {
+    test_fail("log(10)");
+    test_fail("root(4)");
+    test_fail("unknownfunction(727)");
   }
 }

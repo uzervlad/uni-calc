@@ -107,10 +107,10 @@ impl Lexer {
       }
     }
   
-    if c.is_ascii_digit() {
+    if c.is_ascii_digit() || c == '.' {
       let mut buffer = String::new();
   
-      while c.is_ascii_digit() {
+      while c.is_ascii_digit() || c == '.' {
         buffer.push(c);
         stream.next();
         c = stream.peek();

@@ -1,5 +1,5 @@
 use std::io::{stdin, stdout, Write as _};
-use eyre::Result;
+use color_eyre::eyre::Result;
 
 use crate::{lexer::tokenize, parser::parse_expression};
 
@@ -19,6 +19,10 @@ impl RoundWithPrecision for f64 {
 }
 
 fn main() -> Result<()> {
+  color_eyre::config::HookBuilder::default()
+    .display_env_section(false)
+    .install()?;
+
   let mut input = String::new();
 
   println!("Calculator. Use \"funcs\", \"ops\", or \"consts\" for help.");
@@ -87,7 +91,13 @@ fn main() -> Result<()> {
             continue
           }
         };
-        let result = ast.evaluate();
+        let result = match ast.evaluate() {
+          Ok(result) => result,
+          Err(report) => {
+            println!("Error during evaluation: {:?}", report);
+            continue
+          }
+        };
       
         println!("{}", result.round_with_precision(5));
       }

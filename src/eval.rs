@@ -1,42 +1,77 @@
 use crate::{lexer::{Func, Op}, parser::Node};
+use eyre::{eyre, Result};
+
 
 impl Op {
-  pub fn evaluate(self, left: f64, right: f64) -> f64 {
+  pub fn evaluate(self, left: f64, right: f64) -> Result<f64> {
     match self {
-      Op::Add => left + right,
-      Op::Sub => left - right,
-      Op::Mul => left * right,
-      Op::Div => left / right,
-      Op::Pow => left.powf(right),
+      Op::Add => Ok(left + right),
+      Op::Sub => Ok(left - right),
+      Op::Mul => Ok(left * right),
+      Op::Div => {
+        if right == 0.0 {
+          Err(eyre!("Invalid operation: division by zero"))
+        } else {
+          Ok(left / right)
+        }
+      },
+      Op::Pow => Ok(left.powf(right)),
     }
   }
 }
 
 impl Func {
-  pub fn evaluate(self, arg: f64) -> f64 {
+  pub fn evaluate(self, arg: f64) -> Result<f64> {
     match self {
-      Func::Abs => arg.abs(),
-      Func::Sqrt => arg.sqrt(),
-      Func::Log(base) => arg.log(base),
-      Func::Cos => arg.cos(),
-      Func::Sin => arg.sin(),
-      Func::Tg => arg.tan(),
-      Func::Ctg => 1.0 / arg.tan(),
-      Func::Asin => arg.asin(),
-      Func::Acos => arg.acos(),
-      Func::Atan => arg.atan(),
-      Func::Exp => arg.exp(),
-      Func::Root(base) => arg.powf(1. / base),
+      Func::Abs => Ok(arg.abs()),
+      Func::Sqrt => {
+        if arg < 0.0 {
+          Err(eyre!("Invalid operation: square root of negative number"))
+        } else {
+          Ok(arg.sqrt())
+        }
+      }
+      Func::Log(base) => {
+        // Use log2 or log10 if possible for better accuracy
+        if base == 2. {
+          Ok(arg.log2())
+        } else if base == 10. {
+          Ok(arg.log10())
+        } else {
+          Ok(arg.log(base))
+        }
+      },
+      Func::Cos => Ok(arg.cos()),
+      Func::Sin => Ok(arg.sin()),
+      Func::Tg => Ok(arg.tan()),
+      Func::Ctg => Op::Div.evaluate(1.0, arg.tan()),
+      Func::Asin => {
+        if arg < -1.0 || arg > 1.0 {
+          Err(eyre!("Invalid operation: arcsine out of range"))
+        } else {
+          Ok(arg.asin())
+        }
+      },
+      Func::Acos => {
+        if arg < -1.0 || arg > 1.0 {
+          Err(eyre!("Invalid operation: arccosine out of range"))
+        } else {
+          Ok(arg.acos())
+        }
+      }
+      Func::Atan => Ok(arg.atan()),
+      Func::Exp => Ok(arg.exp()),
+      Func::Root(base) => Ok(arg.powf(Op::Div.evaluate(1.0, base)?)),
     }
   }
 }
 
 impl Node {
-  pub fn evaluate(self) -> f64 {
+  pub fn evaluate(self) -> Result<f64> {
     match self {
-      Node::Immediate(value) => value,
-      Node::BinOp(op, left, right) => op.evaluate(left.evaluate(), right.evaluate()),
-      Node::Func(func, node) => func.evaluate(node.evaluate()),
+      Node::Immediate(value) => Ok(value),
+      Node::BinOp(op, left, right) => op.evaluate(left.evaluate()?, right.evaluate()?),
+      Node::Func(func, node) => func.evaluate(node.evaluate()?),
     }
   }
 }
@@ -48,7 +83,7 @@ mod tests {
   fn test(input: &str, expected: f64) {
     let mut lexer = tokenize(input).unwrap();
     let ast = parse_expression(&mut lexer).unwrap();
-    let result = ast.evaluate();
+    let result = ast.evaluate().unwrap();
 
     assert_eq!(result, expected)
   }

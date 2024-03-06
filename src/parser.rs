@@ -14,7 +14,7 @@ fn parse_primary(lexer: &mut Lexer, bracket: bool) -> Result<Node> {
   match lexer.next() {
     Token::Operator(Op::Sub) if !bracket => {
       let value = parse_primary(lexer, false)?;
-      Ok(Node::Immediate(-value.evaluate()))
+      Ok(Node::Immediate(-value.evaluate()?))
     },
     Token::Literal(value) if !bracket => Ok(Node::Immediate(value)),
     Token::LeftBracket => {

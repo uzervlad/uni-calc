@@ -99,6 +99,6 @@ mod tests {
   fn test_functions() {
     test("sqrt(abs(-2))", 2_f64.sqrt());
     test("cos(pi)", -1.);
-    test("sin(log2(10))", 10_f64.log(2.0).sin());
+    test("sin(log2(10))", 10_f64.log2().sin());
   }
 }

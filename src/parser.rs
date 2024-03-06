@@ -78,8 +78,8 @@ fn parse_additive(lexer: &mut Lexer) -> Result<Node> {
         let right = parse_multiplicative(lexer)?;
         left = Node::BinOp(op, Box::new(left), Box::new(right))
       }
-      Token::End => break Ok(left),
-      _ => break Err(Report::msg("Unexpected token"))
+      Token::End | Token::RightBracket => break Ok(left),
+      _ => break Err(Report::msg(format!("Unexpected token: {:?}", lexer.peek()))),
     }
   } 
 }

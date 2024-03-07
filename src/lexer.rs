@@ -177,6 +177,7 @@ pub fn tokenize(input: &str) -> Result<Lexer> {
   Lexer::new(input)
 }
 
+#[cfg(test)]
 #[allow(dead_code, unused_imports)]
 mod tests {
   use super::{tokenize, Func, Op, Token};

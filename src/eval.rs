@@ -76,6 +76,7 @@ impl Node {
   }
 }
 
+#[cfg(test)]
 #[allow(dead_code)]
 mod tests {
   use crate::{lexer::tokenize, parser::parse_expression};
@@ -93,6 +94,13 @@ mod tests {
     test("1 + 2 - 4", -1.);
     test("5 - 1 / 2", 4.5);
     test("2 * 3 ^ 2", 18.);
+  }
+
+  #[test]
+  fn test_parenthesis() {
+    test("(4 * 5) / 2", 10.);
+    test("5 * (2 + 3)", 25.);
+    test("(4 * (3 + 2)) / 5", 4.);
   }
 
   #[test]

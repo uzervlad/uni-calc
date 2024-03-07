@@ -13,6 +13,5 @@ strip = true
 panic = "abort"
 
 [dependencies]
-color-eyre = "0.6.2"
 eyre = "0.6.12"
 thiserror = "1.0.57"
